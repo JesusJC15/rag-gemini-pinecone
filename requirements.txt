@@ -1,0 +1,8 @@
+langchain
+langchain-google-genai
+langchain-pinecone
+langchain-text-splitters
+langchain-community
+pinecone-client
+python-dotenv
+tiktoken
