@@ -11,6 +11,57 @@ This repo contains two scripts:
 - `ingest.py`: loads a text file, chunks it, creates/uses a Pinecone index, and upserts embeddings.
 - `rag_app.py`: runs a simple RAG query against Pinecone and prints the answer.
 
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                         INGESTION PIPELINE                      │
+│                                                                 │
+│   data/sample.txt  ──►  TextLoader  ──►  RecursiveText         │
+│                                          Splitter              │
+│                                              │                  │
+│                                              ▼                  │
+│                                    GoogleGenerativeAI          │
+│                                       Embeddings               │
+│                                    (gemini-embedding-001)      │
+│                                              │                  │
+│                                              ▼                  │
+│                                       Pinecone Index           │
+│                                      (vector store)            │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│                         RAG QUERY PIPELINE                      │
+│                                                                 │
+│   User Question  ──►  Embeddings  ──►  Pinecone Retriever      │
+│                                              │                  │
+│                                              ▼                  │
+│                                       Top-k Chunks             │
+│                                              │                  │
+│                                              ▼                  │
+│                                     ChatPromptTemplate         │
+│                                              │                  │
+│                                              ▼                  │
+│                                   ChatGoogleGenerativeAI       │
+│                                    (gemini-2.5-flash)          │
+│                                              │                  │
+│                                              ▼                  │
+│                                        Answer (str)            │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Components
+
+| Component | Role |
+|---|---|
+| `ingest.py` | Loads text, chunks it, embeds with Gemini, upserts to Pinecone |
+| `rag_app.py` | Embeds user query, retrieves context from Pinecone, answers via Gemini |
+| `data/sample.txt` | Source document used as the knowledge base |
+| **Google Gemini Embeddings** (`models/gemini-embedding-001`) | Converts text ↔ 3072-dim vectors |
+| **ChatGoogleGenerativeAI** (`gemini-2.5-flash`) | Generates the final grounded answer |
+| **Pinecone** | Serverless vector database storing and searching embeddings |
+| **LangChain LCEL** | Composes the retriever → prompt → LLM → parser chain |
+
 ## How it works (high level)
 
 1. **Ingestion**
@@ -110,7 +161,7 @@ Expected output:
 Documents indexed successfully.
 ```
 
-![](data/img/uno.png)
+![Ingestion output](data/img/ingest-evidence.png)
 
 ### Step B — Ask a RAG question
 
@@ -126,13 +177,13 @@ The query is currently hard-coded inside `rag_app.py`:
 query = "What is RAG?"
 ```
 
-![](data/img/dos.png)
+![RAG answer output](data/img/answer.png)
 
 Answer match with content in ```data/sample.txt```
 
 In Pinecone:
 
-![](data/img/tres.png)
+![Pinecone index view](data/img/pinecone-evidence.png)
 
 ## Project structure
 
