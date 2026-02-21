@@ -17,36 +17,36 @@ This repo contains two scripts:
 ┌─────────────────────────────────────────────────────────────────┐
 │                         INGESTION PIPELINE                      │
 │                                                                 │
-│   data/sample.txt  ──►  TextLoader  ──►  RecursiveText         │
-│                                          Splitter              │
+│   data/sample.txt  ──►  TextLoader  ──►  RecursiveText          │
+│                                          Splitter               │
 │                                              │                  │
 │                                              ▼                  │
-│                                    GoogleGenerativeAI          │
-│                                       Embeddings               │
-│                                    (gemini-embedding-001)      │
+│                                    GoogleGenerativeAI           │
+│                                       Embeddings                │
+│                                    (gemini-embedding-001)       │
 │                                              │                  │
 │                                              ▼                  │
-│                                       Pinecone Index           │
-│                                      (vector store)            │
+│                                       Pinecone Index            │
+│                                      (vector store)             │
 └─────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────┐
 │                         RAG QUERY PIPELINE                      │
 │                                                                 │
-│   User Question  ──►  Embeddings  ──►  Pinecone Retriever      │
+│   User Question  ──►  Embeddings  ──►  Pinecone Retriever       │
 │                                              │                  │
 │                                              ▼                  │
-│                                       Top-k Chunks             │
+│                                       Top-k Chunks              │
 │                                              │                  │
 │                                              ▼                  │
-│                                     ChatPromptTemplate         │
+│                                     ChatPromptTemplate          │
 │                                              │                  │
 │                                              ▼                  │
-│                                   ChatGoogleGenerativeAI       │
-│                                    (gemini-2.5-flash)          │
+│                                   ChatGoogleGenerativeAI        │
+│                                    (gemini-2.5-flash)           │
 │                                              │                  │
 │                                              ▼                  │
-│                                        Answer (str)            │
+│                                        Answer (str)             │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
